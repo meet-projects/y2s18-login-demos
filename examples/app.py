@@ -1,5 +1,7 @@
 from flask import Flask
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request
+
+from flask import session as login_session
 
 import databases
 import os
@@ -10,10 +12,10 @@ app.secret_key = os.urandom(12)
 
 @app.route('/')
 def home():
-    if not session.get('logged_in'):
+    if not login_session.get('logged_in'):
         return render_template('login.html')
     else:
-        return "You're logged in {}!".format(session['username'])
+        return "You're logged in {}!".format(login_session['username'])
  
 @app.route('/login', methods=['POST'])
 def login():
@@ -21,8 +23,8 @@ def login():
     if user is None:
         return render_template('failed_login.html')
     if user.password == request.form['password']:
-        session['logged_in'] = True
-        session['username'] = user.username
+        login_session['logged_in'] = True
+        login_session['username'] = user.username
     else:
         return render_template('failed_login.html')
     return render_template('successful_login.html')
